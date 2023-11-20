@@ -13,7 +13,7 @@ const int binHeight = 20;
 
 Servo myservo;
 long duration1, distance1, duration2, distance2;
-int angle = 360;
+int angle = 140;
 
 void setup() {
   lcd.init();
@@ -82,15 +82,25 @@ void loop() {
   // The servo behavior is based on the distance from the first sensor (distance1).
   
   // Check if the distance from the first sensor is less than 10 cm
+  // Check if the distance from the first sensor is less than 10 cm
+// Check if the distance from the first sensor is less than 10 cm
   if (distance1 < 10) {
-    if (angle < 720) {
-      angle = angle + 20;
-      Serial.println(analogRead(echoPin1)); // You can choose to print the analog readings for debugging
+    while (angle > 0) {
+      angle -= 10;
+      myservo.write(angle);
+      Serial.println(angle); // Print the servo angle for debugging
     }
   } else {
-    angle = 360;
-    myservo.write(360);
+    while (angle < 140) {
+      angle += 10;
+      myservo.write(angle);
+      Serial.println(angle); // Print the servo angle for debugging
+    myservo.write(angle);
+    Serial.println(angle); // Print the servo angle for debugging
   }
   myservo.write(angle);
-  delay(1000);
+  }
+
+
+  delay(500);
 }
