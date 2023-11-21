@@ -15,11 +15,30 @@ Servo myservo;
 long duration1, distance1, duration2, distance2;
 int angle = 140;
 
+
+byte black[] = {
+  B11111, 
+  B11111,
+  B11111,
+  B11111,
+  B11111, 
+  B11111,
+  B11111,
+  B11111,
+};
+
+byte white[] = {
+  B00000, 
+  B00000,
+  B00000,
+  B00000,
+  B00000, 
+  B00000,
+  B00000,
+  B00000,
+};
+
 void setup() {
-  lcd.init();
-  lcd.setColorWhite();
-  lcd.setRGB(255, 255, 255);
-  lcd.setCursor(0, 0);
   myservo.attach(servoPin);
   pinMode(trigPin1, OUTPUT);
   pinMode(echoPin1, INPUT);
@@ -27,6 +46,15 @@ void setup() {
   pinMode(echoPin2, INPUT);
   pinMode(buzzer, OUTPUT);
   Serial.begin(9600);
+
+  lcd.init();
+  lcd.setBacklight(true);
+
+  lcd.customSymbol(1, black);
+  lcd.customSymbol(0, white);
+
+  lcd.setCursor(0,0);
+  lcd.print(" Percentage:");
 }
 
 void loop() {
@@ -69,16 +97,8 @@ void loop() {
   Serial.print("Distance Sensor 2: ");
   Serial.print(distance2);
   Serial.println(" cm");
-
-  double binCapacity = (binHeight - distance2)*100 /binHeight;
-  binCapacity = max(0, binCapacity);
-  binCapacity = min(binCapacity, 100);
-  lcd.setCursor(0, 0);
-  lcd.print("Bin Capacity:");
-  lcd.print((int)binCapacity);
-  lcd.print("%");
-
-  // You can use the distance2 value for tracking the distance between the second sensor and an obstacle.
+  
+    // You can use the distance2 value for tracking the distance between the second sensor and an obstacle.
   // The servo behavior is based on the distance from the first sensor (distance1).
   
   // Check if the distance from the first sensor is less than 10 cm
@@ -101,6 +121,21 @@ void loop() {
   myservo.write(angle);
   }
 
+  lcdUpdate(distance2, binHeight);
 
   delay(500);
 }
+
+void lcdUpdate(float currentDistance, float totalDistance){
+  float percentTrash=1-currentDistance/totalDistance;
+  int slotCounter=int(percentTrash*15);
+  for(int i=0;i<slotCounter;i++){
+    lcd.setCursor(i,1);
+    lcd.write((uint8_t)1);
+  }
+  for(int x=slotCounter;x<15;x++){
+    lcd.setCursor(x,1);
+    lcd.write((uint8_t)0);
+  }
+}
+
